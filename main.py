@@ -2,6 +2,7 @@
 from ast import Return
 import imp
 from typing import Optional
+from unittest import result
 
 # Pydantic
 from pydantic import BaseModel
@@ -12,8 +13,16 @@ from fastapi import Body, Query, Path
 
 app = FastAPI()
 
+# Nota: Correr con el servidor uvicorn (uvicorn main:app --reload)
 
 # Models
+
+
+class Location(BaseModel):
+    city: str
+    state: str
+    country: str
+
 
 class Person(BaseModel):
     first_name: str
@@ -69,3 +78,22 @@ def show_person(
         description="This is the person id. It's required and it must be greater than 0")
 ):
     return {person_id: "It exists"}
+
+
+# Validations: Request body
+
+@app.put("/person/{person_id}")
+def update_person(
+    person_id: int = Path(
+        ...,
+        title="Person id",
+        description="This is the person id",
+        gt=0
+    ),
+    person: Person = Body(...),
+    location: Location = Body(...)
+):
+    results = person.dict()
+    results.update(location.dict())
+
+    return results
