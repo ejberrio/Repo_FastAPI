@@ -84,6 +84,20 @@ class Person(BaseModel):
         default=None
     )
 
+    class Config:
+        schema_extra = {
+            "example": {
+                "first_name": "Lina",
+                "last_name": "Corrales",
+                "age": 34,
+                "hair_color": "black",
+                "is_married": True,
+                "email": "linacorrales@gmail.com",
+                "birthday": "1987-06-03",
+                "credit_card": "376151292089510"
+            }
+        }
+
 
 @app.get("/")
 def home():
@@ -108,12 +122,14 @@ def show_person(
         min_length=1,
         max_length=50,
         title="Person name",
-        description="This is the person name. It's between 1 and 50 characters"
+        description="This is the person name. It's between 1 and 50 characters",
+        example="Lina"
     ),
     age: int = Query(
-        ...,
+        ..., #It's wear that way but it may be like that
         title="Person age",
-        description="This is the person age. It's required"
+        description="This is the person age. It's required",
+        example=34
     )
 ):
     return {
@@ -130,7 +146,9 @@ def show_person(
         ...,
         gt=0,
         title="Person id",
-        description="This is the person id. It's required and it must be greater than 0")
+        description="This is the person id. It's required and it must be greater than 0",
+        example=10
+    )
 ):
     return {person_id: "It exists"}
 
@@ -144,6 +162,7 @@ def update_location(
         title="Person id",
         description="This is the person id",
         gt=0,
+        example=10
 
     ),
     location: Location = Body(
@@ -164,7 +183,8 @@ def update_person(
         ...,
         title="Person id",
         description="This is the person id",
-        gt=0
+        gt=0,
+        example=10
     ),
     person: Person = Body(...),
     location: Location = Body(...)
