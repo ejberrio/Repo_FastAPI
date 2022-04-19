@@ -1,10 +1,13 @@
 # Python
+from dataclasses import field
+from doctest import Example
 from typing import Optional
 from enum import Enum
 
 # Pydantic
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, PastDate
 from pydantic import Field
+from pydantic.types import PaymentCardNumber
 
 # FastAPI
 from fastapi import FastAPI
@@ -26,9 +29,27 @@ class HairColor(Enum):
 
 
 class Location(BaseModel):
-    city: str
-    state: str
-    country: str
+    city: str = Field(
+        ...,
+        # example="Medellín"
+    )
+    state: str = Field(
+        ...,
+        # example="Antioquia"
+    )
+    country: str = Field(
+        ...,
+        # example="Colombia"
+    )
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "city": "Medellín",
+                "state": "Antioquia",
+                "country": "Colombia"
+            }
+        }
 
 
 class Person(BaseModel):
@@ -51,6 +72,15 @@ class Person(BaseModel):
         default=None
     )
     is_married: Optional[bool] = Field(
+        default=None
+    )
+    email: Optional[EmailStr] = Field(
+        default=None
+    )
+    birthday: Optional[PastDate] = Field(
+        default="1989-05-12"
+    )
+    credit_card: Optional[PaymentCardNumber] = Field(
         default=None
     )
 
@@ -105,9 +135,30 @@ def show_person(
     return {person_id: "It exists"}
 
 
+# Validations: Request Body (Personal training)
+
+@app.put("/person/details/{person_id}")
+def update_location(
+    person_id: int = Path(
+        ...,
+        title="Person id",
+        description="This is the person id",
+        gt=0,
+
+    ),
+    location: Location = Body(
+        ...,
+        title="Current person's location",
+        description="Update the actual location of the person"
+    )
+
+):
+    return location
+
+
 # Validations: Request body
 
-@app.put("/person/{person_id}")
+@ app.put("/person/{person_id}")
 def update_person(
     person_id: int = Path(
         ...,
