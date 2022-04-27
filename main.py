@@ -52,7 +52,7 @@ class Location(BaseModel):
         }
 
 
-class Person(BaseModel):
+class PersonBase(BaseModel):
     first_name: str = Field(
         ...,
         min_length=1,
@@ -83,6 +83,10 @@ class Person(BaseModel):
     credit_card: Optional[PaymentCardNumber] = Field(
         default=None
     )
+
+
+class Person(PersonBase):
+
     password: str = Field(
         ...,
         min_length=8
@@ -99,42 +103,13 @@ class Person(BaseModel):
                 "email": "linacorrales@gmail.com",
                 "birthday": "1987-06-03",
                 "credit_card": "376151292089510",
-                "password": ""
+                "password": "holasoyever"
             }
         }
 
 
-class PersonOut(BaseModel):
-    first_name: str = Field(
-        ...,
-        min_length=1,
-        max_length=50
-    )
-    last_name: str = Field(
-        ...,
-        min_length=1,
-        max_length=50
-    )
-    age: int = Field(
-        ...,
-        gt=0,
-        le=115
-    )
-    hair_color: Optional[HairColor] = Field(
-        default=None
-    )
-    is_married: Optional[bool] = Field(
-        default=None
-    )
-    email: Optional[EmailStr] = Field(
-        default=None
-    )
-    birthday: Optional[PastDate] = Field(
-        default="1989-05-12"
-    )
-    credit_card: Optional[PaymentCardNumber] = Field(
-        default=None
-    )
+class PersonOut(PersonBase):
+    pass
 
 
 @app.get("/")
